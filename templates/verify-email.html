@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}AuthentiCute - Verify Email{% endblock %}
+
+{% block content %}
+<div class="bg-white bg-opacity-20 backdrop-blur-md rounded-lg p-8 card-shadow border border-white border-opacity-20 w-full max-w-md">
+    <div class="text-center mb-8">
+        <i class="fas fa-envelope-open text-4xl text-white mb-4"></i>
+        <h1 class="text-3xl font-bold text-white mb-2">Verify Email</h1>
+    </div>
+    
+    <div id="verificationStatus" class="text-center">
+        <div id="loading" class="mb-4">
+            <i class="fas fa-spinner fa-spin text-2xl text-white"></i>
+            <p class="text-white mt-2">Verifying your email...</p>
+        </div>
+        
+        <div id="success" class="hidden mb-4">
+            <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
+            <h2 class="text-xl font-bold text-white mb-2">Email Verified!</h2>
+            <p class="text-white opacity-80">Your email has been successfully verified.</p>
+        </div>
+        
+        <div id="error" class="hidden mb-4">
+            <i class="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+            <h2 class="text-xl font-bold text-white mb-2">Verification Failed</h2>
+            <p class="text-white opacity-80" id="errorMessage">Invalid or expired verification token.</p>
+        </div>
+    </div>
+    
+    <div class="mt-6 text-center">
+        <a href="/login" class="btn-primary text-white py-3 px-6 rounded-lg font-semibold inline-block">
+            <i class="fas fa-sign-in-alt mr-2"></i>Go to Login
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    const token = new URLSearchParams(window.location.search).get('token');
+    
+    if (!token) {
+        showError('No verification token provided');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/auth/verify-email?token=${token}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showSuccess();
+        } else {
+            showError(data.detail || 'Verification failed');
+        }
+    } catch (error) {
+        showError('An error occurred during verification');
+    }
+});
+
+function showSuccess() {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('success').classList.remove('hidden');
+}
+
+function showError(message) {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('error').classList.remove('hidden');
+    document.getElementById('errorMessage').textContent = message;
+}
+</script>
+{% endblock %} 
