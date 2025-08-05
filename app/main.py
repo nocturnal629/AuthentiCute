@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 import os
 from app.database import get_db, create_tables
+from app.routes import auth_router, user_router
 
 app = FastAPI(
     title="AuthentiCute",
@@ -13,7 +14,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 templates = Jinja2Templates(directory="templates")
+
+app.include_router(auth_router)
+app.include_router(user_router)
 
 @app.on_event("startup")
 async def startup_event():
@@ -34,6 +40,26 @@ async def login_page(request: Request):
 async def signup_page(request: Request):
     """Signup page"""
     return templates.TemplateResponse("signup.html", {"request": request})
+
+@app.get("/verify-email", response_class=HTMLResponse)
+async def verify_email_page(request: Request, token: str = None):
+    """Email verification page"""
+    return templates.TemplateResponse("verify-email.html", {"request": request, "token": token})
+
+@app.get("/forgot-password", response_class=HTMLResponse)
+async def forgot_password_page(request: Request):
+    """Forgot password page"""
+    return templates.TemplateResponse("forgot-password.html", {"request": request})
+
+@app.get("/reset-password", response_class=HTMLResponse)
+async def reset_password_page(request: Request, token: str = None):
+    """Reset password page"""
+    return templates.TemplateResponse("reset-password.html", {"request": request, "token": token})
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page(request: Request):
+    """User dashboard page"""
+    return templates.TemplateResponse("dashboard.html", {"request": request})
 
 @app.get("/api/health")
 async def health_check():
