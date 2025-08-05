@@ -8,6 +8,9 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+if DATABASE_URL and not DATABASE_URL.startswith("postgresql+psycopg"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://")
+
 engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -24,6 +27,6 @@ def get_db():
 
 def create_tables():
     """Create all database tables"""
-    from app.models import User
+    from app.models import User, UserSession, EmailVerificationToken, PasswordResetToken
     
     Base.metadata.create_all(bind=engine) 
