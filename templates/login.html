@@ -104,6 +104,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const data = await response.json();
         
         if (response.ok) {
+            localStorage.setItem('sessionToken', data.session_token);
             showMessage('Login successful!', 'success');
 
             setTimeout(() => {
