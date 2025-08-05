@@ -13,7 +13,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 from app.database import Base
-from app.models import User
+from app.models import User, UserSession, EmailVerificationToken, PasswordResetToken
 
 target_metadata = Base.metadata
 
