@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.auth import UserSignup, UserLogin, UserResponse, SessionResponse, PasswordResetRequest, PasswordReset
@@ -7,6 +7,7 @@ from app.utils.auth_utils import hash_password, verify_password, send_verificati
 from app.utils.db_utils import get_user_by_email, create_user, verify_user_email
 from app.utils.session_utils import create_user_session, delete_session, get_user_from_session
 from app.utils.token_utils import create_verification_token, get_verification_token, mark_verification_token_used, create_reset_token, get_reset_token, mark_reset_token_used
+from app.utils.oauth_utils import get_google_oauth_url, handle_google_callback
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
@@ -80,6 +81,42 @@ async def login(user_data: UserLogin, db: Session = Depends(get_db)):
         ),
         expires_at=session.expires_at
     )
+
+@router.get("/google/login")
+async def google_login():
+    """Initiate Google OAuth login"""
+    try:
+        auth_url = get_google_oauth_url()
+        return RedirectResponse(url=auth_url)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to initiate Google OAuth"
+        )
+
+@router.get("/google/callback")
+async def google_callback(code: str, db: Session = Depends(get_db)):
+    """Handle Google OAuth callback"""
+    try:
+        user = handle_google_callback(db, code)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to authenticate with Google. Please try again."
+            )
+        
+        session = create_user_session(db, user.id)
+        
+        redirect_url = f"/dashboard?session_token={session.session_token}"
+        return RedirectResponse(url=redirect_url)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred during Google OAuth. Please try again."
+        )
 
 @router.post("/logout")
 async def logout(session_token: str, db: Session = Depends(get_db)):
