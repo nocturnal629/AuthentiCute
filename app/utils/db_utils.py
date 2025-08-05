@@ -40,4 +40,13 @@ def delete_user(db: Session, user_id: int) -> bool:
         db.delete(user)
         db.commit()
         return True
+    return False
+
+def verify_user_email(db: Session, user_id: int) -> bool:
+    """Mark user email as verified"""
+    user = get_user_by_id(db, user_id)
+    if user:
+        user.is_verified = True
+        db.commit()
+        return True
     return False 
