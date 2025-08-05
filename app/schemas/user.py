@@ -9,6 +9,8 @@ class UserProfile(BaseModel):
     name: Optional[str] = None
     phone: Optional[str] = None
     bio: Optional[str] = None
+    oauth_provider: Optional[str] = None
+    oauth_id: Optional[str] = None
     is_verified: bool
     is_active: bool
     created_at: datetime
