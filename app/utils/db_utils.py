@@ -10,12 +10,25 @@ def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
     """Get user by ID"""
     return db.query(User).filter(User.id == user_id).first()
 
-def create_user(db: Session, email: str, hashed_password: str, name: str = None) -> User:
-    """Create a new user"""
+def create_user(
+    db: Session, 
+    email: str, 
+    hashed_password: str = None, 
+    name: str = None,
+    oauth_provider: str = None,
+    oauth_id: str = None,
+    oauth_email: str = None,
+    is_verified: bool = False
+) -> User:
+    """Create a new user (supports both regular and OAuth users)"""
     user = User(
         email=email,
         hashed_password=hashed_password,
-        name=name
+        name=name,
+        oauth_provider=oauth_provider,
+        oauth_id=oauth_id,
+        oauth_email=oauth_email,
+        is_verified=is_verified
     )
     db.add(user)
     db.commit()
