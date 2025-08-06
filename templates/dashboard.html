@@ -213,7 +213,8 @@ document.getElementById('saveProfile').addEventListener('click', async function(
             showMessage('Profile updated successfully!', 'success');
         } else {
             const data = await response.json();
-            showMessage(data.detail || 'Failed to update profile', 'error');
+            const errorMessage = handleApiError(data, 'Failed to update profile');
+            showMessage(errorMessage, 'error');
         }
     } catch (error) {
         showMessage('An error occurred. Please try again.', 'error');

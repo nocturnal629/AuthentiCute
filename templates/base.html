@@ -62,6 +62,16 @@
                 alertDiv.remove();
             }, 3000);
         }
+
+        function handleApiError(data, defaultMessage = 'An error occurred') {
+            let errorMessage = defaultMessage;
+            if (data.detail && typeof data.detail === 'object' && data.detail.error) {
+                errorMessage = data.detail.error.message || errorMessage;
+            } else if (data.detail && typeof data.detail === 'string') {
+                errorMessage = data.detail;
+            }
+            return errorMessage;
+        }
     </script>
     {% block scripts %}{% endblock %}
 </body>

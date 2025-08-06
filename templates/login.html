@@ -136,7 +136,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
                 window.location.href = '/dashboard';
             }, 1000);
         } else {
-            showMessage(data.detail || 'Login failed', 'error');
+            const errorMessage = handleApiError(data, 'Login failed');
+            showMessage(errorMessage, 'error');
         }
     } catch (error) {
         showMessage('An error occurred. Please try again.', 'error');

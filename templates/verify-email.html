@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (response.ok) {
             showSuccess();
         } else {
-            showError(data.detail || 'Verification failed');
+            const errorMessage = handleApiError(data, 'Verification failed');
+            showError(errorMessage);
         }
     } catch (error) {
         showError('An error occurred during verification');
