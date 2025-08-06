@@ -1,0 +1,57 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="120" height="120" rx="20" ry="20" fill="url(#bgGradient)"/>
+  
+  <!-- Main heart shape -->
+  <path d="M 60 45 C 55 35, 40 35, 40 50 C 40 65, 60 85, 60 85 C 60 85, 80 65, 80 50 C 80 35, 65 35, 60 45 Z" 
+        fill="url(#heartGradient)" filter="url(#softGlow)"/>
+  
+  <!-- Cute face on the heart -->
+  <!-- Eyes -->
+  <circle cx="54" cy="50" r="2.5" fill="#7c3aed"/>
+  <circle cx="66" cy="50" r="2.5" fill="#7c3aed"/>
+  <circle cx="54.8" cy="49.2" r="0.8" fill="#ffffff"/>
+  <circle cx="66.8" cy="49.2" r="0.8" fill="#ffffff"/>
+  
+  <!-- Blush -->
+  <ellipse cx="48" cy="54" rx="2" ry="1.5" fill="#f472b6" opacity="0.6"/>
+  <ellipse cx="72" cy="54" rx="2" ry="1.5" fill="#f472b6" opacity="0.6"/>
+  
+  <!-- Smile -->
+  <path d="M 54 58 Q 60 63 66 58" stroke="#7c3aed" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Authenticity checkmark -->
+  <circle cx="75" cy="40" r="8" fill="#10b981" opacity="0.9"/>
+  <path d="M 71 40 L 74 43 L 79 37" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Decorative sparkles -->
+  <g fill="#ffffff" opacity="0.7">
+    <path d="M 30 35 L 31 38 L 34 37 L 31 40 L 30 43 L 29 40 L 26 37 L 29 38 Z"/>
+    <path d="M 90 70 L 91 73 L 94 72 L 91 75 L 90 78 L 89 75 L 86 72 L 89 73 Z"/>
+    <path d="M 25 75 L 26 77 L 28 76 L 26 78 L 25 80 L 24 78 L 22 76 L 24 77 Z"/>
+  </g>
+  
+  <!-- Small hearts -->
+  <path d="M 85 85 C 83 82, 79 82, 79 86 C 79 90, 85 95, 85 95 C 85 95, 91 90, 91 86 C 91 82, 87 82, 85 85 Z" 
+        fill="#ffffff" opacity="0.6"/>
+  <path d="M 35 25 C 33.5 23, 30.5 23, 30.5 26 C 30.5 29, 35 32, 35 32 C 35 32, 39.5 29, 39.5 26 C 39.5 23, 36.5 23, 35 25 Z" 
+        fill="#ffffff" opacity="0.6"/>
+</svg>
