@@ -38,8 +38,8 @@ def send_verification_email(email: str, token: str) -> bool:
             print("Mailgun configuration missing")
             return False
         
-        base_url = os.getenv("BASE_URL")
-        verification_url = f"{base_url}/verify-email?token={token}"
+        base_url = os.getenv("DUCKDNS_DOMAIN")
+        verification_url = f"https://{base_url}/verify-email?token={token}"
         
         subject = "Verify your AuthentiCute account"
         html_content = f"""
@@ -82,8 +82,8 @@ def send_password_reset_email(email: str, token: str) -> bool:
             print("Mailgun configuration missing")
             return False
         
-        base_url = os.getenv("BASE_URL")
-        reset_url = f"{base_url}/reset-password?token={token}"
+        base_url = os.getenv("DUCKDNS_DOMAIN")
+        reset_url = f"https://{base_url}/reset-password?token={token}"
         
         subject = "Reset your AuthentiCute password"
         html_content = f"""
