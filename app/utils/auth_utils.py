@@ -38,7 +38,8 @@ def send_verification_email(email: str, token: str) -> bool:
             print("Mailgun configuration missing")
             return False
         
-        verification_url = f"http://localhost:8000/verify-email?token={token}"
+        base_url = os.getenv("BASE_URL")
+        verification_url = f"{base_url}/verify-email?token={token}"
         
         subject = "Verify your AuthentiCute account"
         html_content = f"""
@@ -58,7 +59,7 @@ def send_verification_email(email: str, token: str) -> bool:
             f"https://api.mailgun.net/v3/{mailgun_domain}/messages",
             auth=("api", mailgun_api_key),
             data={
-                "from": from_email,
+                "from": f"AuthentiCute <noreply@{mailgun_domain}>",
                 "to": email,
                 "subject": subject,
                 "html": html_content
@@ -81,7 +82,8 @@ def send_password_reset_email(email: str, token: str) -> bool:
             print("Mailgun configuration missing")
             return False
         
-        reset_url = f"http://localhost:8000/reset-password?token={token}"
+        base_url = os.getenv("BASE_URL")
+        reset_url = f"{base_url}/reset-password?token={token}"
         
         subject = "Reset your AuthentiCute password"
         html_content = f"""
@@ -102,7 +104,7 @@ def send_password_reset_email(email: str, token: str) -> bool:
             f"https://api.mailgun.net/v3/{mailgun_domain}/messages",
             auth=("api", mailgun_api_key),
             data={
-                "from": from_email,
+                "from": f"AuthentiCute <noreply@{mailgun_domain}>",
                 "to": email,
                 "subject": subject,
                 "html": html_content
