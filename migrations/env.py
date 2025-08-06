@@ -4,6 +4,7 @@ from sqlalchemy import pool
 from alembic import context
 import os
 from dotenv import load_dotenv
+import psycopg
 
 load_dotenv()
 
@@ -18,7 +19,12 @@ from app.models import User, UserSession, EmailVerificationToken, PasswordResetT
 target_metadata = Base.metadata
 
 def get_url():
-    return os.getenv("DATABASE_URL")
+    url = os.getenv("DATABASE_URL")
+    if url and url.startswith("postgresql+psycopg://"):
+        return url
+    elif url and url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+psycopg://")
+    return url
 
 def run_migrations_offline() -> None:
     url = get_url()
@@ -35,6 +41,12 @@ def run_migrations_offline() -> None:
 def run_migrations_online() -> None:
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()
+    
+    if "sqlalchemy.url" in configuration:
+        url = configuration["sqlalchemy.url"]
+        if url and not url.startswith("postgresql+psycopg://"):
+            configuration["sqlalchemy.url"] = url.replace("postgresql://", "postgresql+psycopg://")
+    
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
