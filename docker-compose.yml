@@ -1,13 +1,29 @@
-version: '3.8'
-
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: authenticute_postgres
+    environment:
+      POSTGRES_DB: authenticute
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d authenticute"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build: .
     container_name: authenticute_app
     env_file:
       - .env
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgresql+psycopg://${DB_USER}:${DB_PASSWORD}@postgres:5432/authenticute
       MAILGUN_API_KEY: ${MAILGUN_API_KEY}
       MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
@@ -18,10 +34,15 @@ services:
     volumes:
       - .:/app
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: >
       sh -c "
         echo 'Waiting for database to be ready...' &&
-        python -c 'from app.database import create_tables; create_tables()' &&
         alembic upgrade head &&
         uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
-      " 
+      "
+
+volumes:
+  postgres_data: 
