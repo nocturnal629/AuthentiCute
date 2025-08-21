@@ -21,7 +21,7 @@ A beautiful and secure User Authentication and Management System built with Fast
 ### Prerequisites
 
 - Python 3.12+
-- PostgreSQL database (or Neon cloud database)
+- Docker and Docker Compose
 - Mailgun account for email verification
 - Google Cloud Console account for OAuth
 
@@ -33,30 +33,13 @@ A beautiful and secure User Authentication and Management System built with Fast
    cd AuthentiCute
    ```
 
-2. **Create and activate virtual environment**
-   ```bash
-   # Create virtual environment
-   python -m venv venv
-   
-   # Activate virtual environment
-   # On Windows:
-   venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set up environment variables**
+2. **Set up environment variables**
    ```bash
    cp env.example .env
    # Edit .env with your actual configuration
    ```
 
-4. **Set up Google OAuth (Optional but Recommended)**
+3. **Set up Google OAuth (Optional but Recommended)**
    
    a. Go to [Google Cloud Console](https://console.cloud.google.com/)
 
@@ -75,58 +58,41 @@ A beautiful and secure User Authentication and Management System built with Fast
    GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
    ```
 
-5. **Set up the database**
-   ```bash
-   # Create base tables (users table and other core tables)
-   python -c "from app.database import create_tables; create_tables()"
-   
-   # Apply migrations (creates additional tables and schema changes)
-   alembic upgrade head
-   ```
-
-6. **Start the application**
-   ```bash
-   python run.py
-   ```
-
-7. **Access the application**
-   - Frontend: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
-   - Database Health Check: http://localhost:8000/api/db-health
-
-## Docker Deployment
-
-### Quick Docker Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/nocturnal625/AuthentiCute.git
-   cd AuthentiCute
-   ```
-
-2. **Set up environment variables (Optional)**
-   ```bash
-   cp env.example .env
-   ```
-
-3. **Build and run with Docker Compose**
+4. **Start the application with Docker Compose**
    ```bash
    docker-compose up --build
    ```
 
-4. **Access the application**
+5. **Access the application**
    - Frontend: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
    - Database Health Check: http://localhost:8000/api/db-health
 
-### Docker Commands
+## Database Configuration
+
+The application now uses a local PostgreSQL database running in Docker, which is perfect for both development and AWS EC2 deployment.
+
+### Database Details
+- **Database Name**: authenticute
+- **Username**: authenticute_user
+- **Password**: authenticute_password
+- **Host**: postgres (within Docker network) or localhost (external access)
+- **Port**: 5432
+
+## Docker Commands
 
 ```bash
 # Build and start all services
 docker-compose up --build
 
-# Stop any running containers
+# Stop all services
 docker-compose down
+
+# Stop and remove volumes (WARNING: This will delete all data)
+docker-compose down -v
+
+# View logs
+docker-compose logs -f
 ```
 
 ## Project Structure
@@ -136,17 +102,54 @@ AuthentiCute/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py              # FastAPI application
+│   ├── database.py          # Database configuration
 │   ├── models/              # Database models
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── session.py
+│   │   └── token.py
 │   ├── schemas/             # Pydantic schemas
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   └── user.py
 │   ├── routes/              # API routes
-│   ├── services/            # Business logic
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   └── user.py
 │   └── utils/               # Utility functions
+│       ├── __init__.py
+│       ├── auth_utils.py
+│       ├── client_utils.py
+│       ├── db_utils.py
+│       ├── error_handlers.py
+│       ├── oauth_utils.py
+│       ├── rate_limiter.py
+│       ├── session_utils.py
+│       └── token_utils.py
 ├── templates/               # HTML templates
-├── static/                  # Static files (CSS, JS)
+│   ├── base.html
+│   ├── index.html
+│   ├── login.html
+│   ├── signup.html
+│   ├── dashboard.html
+│   ├── forgot-password.html
+│   ├── reset-password.html
+│   └── verify-email.html
+├── static/                  # Static files (CSS, JS, images)
+│   ├── css/
+│   │   └── style.css
+│   └── authenticute_logo.svg
 ├── migrations/              # Database migrations
+│   ├── env.py
+│   ├── script.py.mako
+│   └── versions/
 ├── requirements.txt         # Python dependencies
-├── run.py                   # Application runner
-└── README.md               # This file
+├── docker-compose.yml       # Docker Compose configuration
+├── Dockerfile              # Docker image configuration
+├── env.example             # Environment variables template
+├── alembic.ini            # Alembic configuration
+├── run.py                 # Application runner
+└── README.md              # This file
 ```
 
 ## License
